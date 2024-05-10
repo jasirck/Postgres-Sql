@@ -1,73 +1,129 @@
-(JUST IN case : / => frontslash, \ => backslash)
-
-Check postgres version:
-psql --version 
-
-Connect to postgres: 
-psql -U postgres 
-(the postgres user is default superuser for the postgresSQL)
-
-# or the above error showed any socket / Peer Authentication error; then use this;
-sudo -u postgres psql
-
-Create new user : 
-psql -U postgres
-CREATE USER <user_name> WITH SUPERUSER PASSWORD '<password>';
-
-(Login with created user : psql -U <user_name> -d <database_name> )
-Delete created user : DROP USER <user_name>
-
-i.e. if your created user name is root; then you should log in by selecting any database if you don't specify any, the default database is the username itself (which should be created if not created).
-Ex: psql -U root (will connect to root database) , but if root database is not created; then psql -U root won't log in.
-OR, we can connect to other database already available in the system using -d flag.
-Ex: psql -U root -d <already_made_db_name>
-
-List all users in Database : 
-\du
-for more info use : \du+
-
-List all databases : 
+-- Show Databases
 \l
 
-Choose (Connect to) Database : 
-\c database_name
+-- Create Database
+CREATE DATABASE theeasylearn;
 
-Create Database : 
-CREATE DATABASE database_name;
+-- Connect to Database
+\c theeasylearn;
 
-List Tables in the Current Database
-\dt
-
-Create a Table : 
-CREATE TABLE table_name (
-    column1 datatype1,
-    column2 datatype2,
-    ...
+-- Create Table (Person)
+CREATE TABLE person (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(32) NOT NULL,
+    surname VARCHAR(32) NOT NULL,
+    email VARCHAR(128) UNIQUE NOT NULL,
+    mobile BIGINT NOT NULL,
+    gender CHAR(1) DEFAULT 'm',
+    birthdate DATE
 );
-Ex: 
-CREATE TABLE COMPANY(
-   ID INT PRIMARY KEY     NOT NULL,
-   NAME           TEXT    NOT NULL,
-   AGE            INT     NOT NULL,
-   ADDRESS        CHAR(50),
-   SALARY         REAL
+
+-- Create Table (Admin)
+CREATE TABLE admin (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(128) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at DATE,
+    accessed_at TIMESTAMP
 );
-[Here, instead of char, varchar also is same;)
 
-Describe a table: 
-\d
+-- Insert Into Table
+INSERT INTO admin (email, password, created_at, accessed_at) 
+VALUES ('ankit@gmail.com', '123123', '2022-10-22', CURRENT_TIMESTAMP);
 
+INSERT INTO person (name, surname, email, mobile) 
+VALUES ('kartik', 'updhayay', 'kartik@gmail.com', 1472583690);
 
-Insert into Table : 
-INSERT INTO table_name (column1, column2, ...) VALUES (value1, value2, ...);
+INSERT INTO person (name, surname, email, mobile) 
+VALUES ('mohan', 'patel', 'mohan@gmail.com', 1258789541);
 
+INSERT INTO admin (email, password, accessed_at) 
+VALUES ('star@gmail.com', 'star', '2022-10-10');
 
-Select from Table : 
-SELECT * FROM <table_name>
+-- Delete From Table
+DELETE FROM admin WHERE email='star@gmail.com';
 
-Drop the table : 
-DROP TABLE <table_name>
+DELETE FROM person WHERE id=4;
 
+DELETE FROM person WHERE id>=100;
 
-Quit the application
-\q
+DELETE FROM person;
+
+-- Update Existing Rows
+UPDATE customers 
+SET customername='Ankit', contactlastname='patel', creditlimit=9999999 
+WHERE customernumber=103;
+
+UPDATE customers 
+SET creditlimit=creditlimit+5;
+
+UPDATE customers 
+SET creditlimit=creditlimit-5 
+WHERE customernumber<=110;
+
+UPDATE payments 
+SET amount=amount+1 
+WHERE paymentdate>='2003-01-01' AND paymentdate<='2003-12-31';
+
+-- Fetch and Display Rows
+SELECT * FROM customers;
+
+SELECT customerNumber, customerName, city, state, country FROM customers;
+
+SELECT * FROM customers LIMIT 10 OFFSET 0;
+
+SELECT * FROM customers ORDER BY customerName;
+
+SELECT customerNumber, customerName, city, state, country 
+FROM customers 
+ORDER BY country, state, city;
+
+-- Aggregate Functions
+SELECT SUM(amount) FROM payments;
+
+SELECT MIN(amount) FROM payments;
+
+SELECT MAX(amount) FROM payments;
+
+SELECT AVG(amount) FROM payments;
+
+SELECT COUNT(*) FROM customers;
+
+SELECT COUNT(*) FROM customers WHERE country='USA';
+
+SELECT country, COUNT(*) FROM customers GROUP BY country;
+
+SELECT country, COUNT(*) FROM customers GROUP BY country ORDER BY COUNT(*) DESC;
+
+SELECT country, COUNT(*) FROM customers GROUP BY country HAVING COUNT(*) > 10;
+
+-- Join Operation
+SELECT p.*
+FROM payments AS p;
+
+SELECT customerName, city, state, country
+FROM customers AS c;
+
+SELECT p.*, customerName, city, state, country
+FROM payments AS p
+JOIN customers AS c ON p.customerNumber = c.customerNumber;
+
+SELECT customerName, city, state, country, p.*
+FROM payments AS p
+JOIN customers AS c ON p.customerNumber = c.customerNumber
+WHERE amount > 15000
+ORDER BY amount DESC;
+
+-- Display customerNumber, customerName along with order count
+SELECT customerNumber, customerName
+FROM customers;
+
+SELECT COUNT(*), customerNumber
+FROM orders
+GROUP BY customerNumber;
+
+SELECT c.customerNumber, c.customerName, COUNT(*)
+FROM customers AS c
+JOIN orders AS o ON c.customerNumber = o.customerNumber
+GROUP BY c.customerNumber;
+
