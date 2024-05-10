@@ -1,3 +1,4 @@
+Content
 The SQL commands and queries included in this repository cover the following topics:
 
 * Database Management: Creating and dropping databases.
@@ -9,5 +10,6 @@ The SQL commands and queries included in this repository cover the following top
 
 Each command or query is accompanied by a brief explanation of its purpose and usage.
 
-Usage:
+Usage
+
 To use these SQL commands and queries, you can simply copy and paste them into your PostgreSQL database management tool, such as psql command-line interface or a GUI tool like pgAdmin.
